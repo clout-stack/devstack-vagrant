@@ -1,0 +1,26 @@
+# Final Year Project
+# @author Muhammad Dadu
+# @year 2016
+hostname_manager: devstack.vagrant # manager hostname
+hostname_compute: compute.vagrant # compute hostname
+
+# The domain names and ips to add in the no_proxy variable
+user_domains: .openstack.site,10.20.30.40,127.0.0.1,localhost
+stack_password: supersecret # password for system user 'stack'
+
+service_password: supersecret # password for services such as database
+admin_password: supersecret # password for  OpenStack admin user
+
+setup_mode: devstack
+bridge_int: 'en0: Wi-Fi (AirPort)'
+
+devstack_branch: master # github branch
+# You can specify stable MAC addresses to keep this from resetting on every
+# create.
+mac_address_manager: 0800274a508c
+mac_address_compute: 0800274a508d
+
+ip_address_manager: 10.0.10.10 # manager static ip
+ip_address_compute: 10.0.10.20 # compute static ip
+
+extra_images: https://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img,https://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img
