@@ -54,6 +54,9 @@ def configure_vm(name, vm, conf)
     if conf["mac_address_#{name}"]
       vb.customize ["modifyvm", :id, "--macaddress2", conf["mac_address_#{name}"]]
     end
+    # upgrade memory & cpus
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
+    vb.customize ["modifyvm", :id, "--cpus", "2"]
   end
 
   # puppet provisioning
@@ -76,6 +79,16 @@ def configure_vm(name, vm, conf)
     end
   end
 
+
+  # install & update pip
+  vm.provision "shell" do |shell|
+    shell.inline = "sudo apt-get install -y python-pip python-dev build-essential && sudo pip install --upgrade pip"
+  end
+  # update libvirt to 1.0.6
+  vm.provision "shell" do |shell|
+    shell.inline = "cd /tmp && curl http://pkgs.fedoraproject.org/repo/pkgs/libvirt/libvirt-1.0.6.tar.gz/a4a09a981f902c4d6aa5138c753d64fd/libvirt-1.0.6.tar.gz > libvirt-1.0.6.tar.gz && tar xf libvirt-1.0.6.tar.gz && sudo apt-get install -y libxml2-dev libcurl4-gnutls-dev libnl-route-3-dev w3c-dtd-xhtml libdevmapper-dev libpciaccess-dev make && cd libvirt-1.0.6 && ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc --with-esx=yes && make && sudo make install"
+  end
+  
   if conf['setup_mode'] == "devstack"
     vm.provision "shell" do |shell|
       shell.inline = "sudo su - stack -c 'cd ~/devstack && ./stack.sh'"
@@ -146,8 +159,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "manager", primary: true do |manager|
     configure_vm("manager", manager.vm, conf)
-    manager.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
-    manager.vm.network "forwarded_port", guest: 6080, host: 6080, host_ip: "127.0.0.1"
+    # manager.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+    # manager.vm.network "forwarded_port", guest: 6080, host: 6080, host_ip: "127.0.0.1"
   end
 
   if conf['hostname_compute']
